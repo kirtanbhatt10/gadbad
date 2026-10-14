@@ -41,4 +41,4 @@ Explanations live in `gadbad/rules.py` (`Rule`) and `ADVICE`. Add a field for th
 
 1. Update `__version__` in `gadbad/__init__.py` and move the **Unreleased** notes in `CHANGELOG.md` under the new version.
 2. Merge to `main` and wait for CI to pass.
-3. Tag and push: `git tag v1.2.3 && git push origin v1.2.3`. The release workflow checks the tag matches the version, publishes to PyPI and creates the GitHub release.
+3. On GitHub, open **Releases > Draft a new release**, create the tag `v1.2.3` on `main`, paste the changelog section as the notes, and publish. The release workflow checks the tag matches the version, runs the tests, publishes to PyPI and attaches the built files to the release.
