@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a scam or fraud (India)
+    url: https://cybercrime.gov.in
+    about: Gadbad is not a reporting channel. Report fraud here or call 1930.
+  - name: Report a security vulnerability in Gadbad
+    url: https://github.com/kirtanbhatt10/gadbad/security/advisories/new
+    about: Please report vulnerabilities privately.
