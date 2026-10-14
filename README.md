@@ -8,8 +8,8 @@
 It reads the APK without installing or running it, and explains what the app can do in English or Hindi.
 
 [![CI](https://github.com/kirtanbhatt10/gadbad/actions/workflows/ci.yml/badge.svg)](https://github.com/kirtanbhatt10/gadbad/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/gadbad?color=blue)](https://pypi.org/project/gadbad/)
-[![Python](https://img.shields.io/pypi/pyversions/gadbad)](https://pypi.org/project/gadbad/)
+[![PyPI](https://img.shields.io/pypi/v/gadbad?color=blue&cacheSeconds=3600)](https://pypi.org/project/gadbad/)
+[![Python](https://img.shields.io/pypi/pyversions/gadbad?cacheSeconds=3600)](https://pypi.org/project/gadbad/)
 ![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 ![Typed](https://img.shields.io/badge/typing-strict-informational)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
