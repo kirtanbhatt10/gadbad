@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chowkidar"
+version = "0.1.0"
+description = "Static analysis for scam APKs circulating over WhatsApp in India: SMS theft, accessibility abuse and Telegram/C2 indicators."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+chowkidar = "chowkidar.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["chowkidar*"]
