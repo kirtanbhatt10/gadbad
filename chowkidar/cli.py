@@ -1,4 +1,12 @@
-"""Command-line entry point: `chowkidar scan <file.apk> [--json]`."""
+"""Command-line entry point.
+
+    chowkidar scan suspicious.apk                 # English summary
+    chowkidar scan suspicious.apk --lang hi       # Hindi summary
+    chowkidar scan suspicious.apk --json          # full machine-readable report
+    chowkidar scan suspicious.apk --markdown      # report to attach to a complaint
+
+Exit codes: 0 no indicators or low risk, 1 suspicious or likely malicious, 2 error.
+"""
 
 from __future__ import annotations
 
@@ -8,6 +16,7 @@ import sys
 
 from . import __version__
 from .analyzer import analyze
+from .report import to_markdown, to_text
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -15,9 +24,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=__version__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    scan = sub.add_parser("scan", help="analyse an APK without running it")
+    scan = sub.add_parser("scan", help="analyse an APK without installing or running it")
     scan.add_argument("apk", help="path to the .apk file")
-    scan.add_argument("--json", action="store_true", help="print the report as JSON")
+    fmt = scan.add_mutually_exclusive_group()
+    fmt.add_argument("--json", action="store_true", help="print the full report as JSON")
+    fmt.add_argument("--markdown", action="store_true", help="print a Markdown report for a complaint")
+    scan.add_argument("--lang", choices=["en", "hi"], default="en", help="language for explanations")
 
     args = parser.parse_args(argv)
 
@@ -28,14 +40,12 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     if args.json:
-        print(json.dumps(report.to_dict(), indent=2))
+        print(json.dumps(report.to_dict(), indent=2, ensure_ascii=False))
+    elif args.markdown:
+        print(to_markdown(report))
     else:
-        print(f"File:     {report.file}")
-        print(f"SHA-256:  {report.sha256}")
-        print(f"Verdict:  {report.verdict}")
-        for finding in report.findings:
-            print(f"  [{finding.severity.upper()}] {finding.title}: {finding.detail}")
-    return 0 if report.verdict == "no indicators found" else 1
+        print(to_text(report, args.lang))
+    return 1 if report.verdict in ("suspicious", "likely malicious") else 0
 
 
 if __name__ == "__main__":
