@@ -1,0 +1,36 @@
+name: Bug report
+description: Gadbad crashed, hung or behaved unexpectedly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If a crafted file makes Gadbad run code, read other files or hang, report it privately instead: see SECURITY.md.
+        **Do not attach APKs or malware.**
+  - type: input
+    id: version
+    attributes:
+      label: Gadbad version
+      description: Output of `gadbad --version`
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS and Python version
+      placeholder: e.g. Windows 11, Python 3.12
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command you ran
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true

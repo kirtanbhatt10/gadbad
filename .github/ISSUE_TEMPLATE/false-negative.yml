@@ -1,0 +1,36 @@
+name: Missed scam APK (false negative)
+description: Gadbad rated a scam app as safe or low risk
+labels: ["detection", "false-negative"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not attach the APK or any malware.** Share its hash and what it did instead.
+        If you lost money, report it first at https://cybercrime.gov.in or call 1930.
+  - type: input
+    id: sha256
+    attributes:
+      label: SHA-256 of the APK
+      description: Shown at the top of `gadbad scan` output.
+    validations:
+      required: true
+  - type: input
+    id: lure
+    attributes:
+      label: What was the app pretending to be?
+      placeholder: e.g. RTO e-challan, PM Kisan list, SBI KYC update
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: What did it do, or what do you know about it?
+      description: e.g. read OTPs, forwarded calls, sent SMS to contacts. Links to public analyses are welcome.
+  - type: textarea
+    id: output
+    attributes:
+      label: Gadbad output
+      description: Paste `gadbad scan app.apk --json`. Bot tokens in JSON output are unmasked, so you may redact them.
+      render: json
+    validations:
+      required: true

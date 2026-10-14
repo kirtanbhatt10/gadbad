@@ -1,0 +1,32 @@
+name: Real app wrongly flagged (false positive)
+description: Gadbad rated a legitimate app as suspicious or malicious
+labels: ["detection", "false-positive"]
+body:
+  - type: input
+    id: app
+    attributes:
+      label: App name and package
+      placeholder: e.g. Fossify Messages, org.fossify.messages
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Where is the official download?
+      description: Play Store, F-Droid or the developer's GitHub releases page.
+    validations:
+      required: true
+  - type: input
+    id: sha256
+    attributes:
+      label: SHA-256 of the APK you scanned
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Gadbad output
+      description: Paste `gadbad scan app.apk --json`.
+      render: json
+    validations:
+      required: true
