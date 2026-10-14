@@ -4,12 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chowkidar"
-version = "0.1.0"
-description = "Static analysis for scam APKs circulating over WhatsApp in India: SMS theft, accessibility abuse and Telegram/C2 indicators."
+version = "0.2.0"
+description = "Static analysis for scam APKs circulating over WhatsApp in India: SMS/OTP theft, accessibility abuse, call forwarding and Telegram/C2 indicators."
 readme = "README.md"
 license = { text = "MIT" }
+authors = [{ name = "Kirtan Bhatt" }]
 requires-python = ">=3.10"
 dependencies = []
+keywords = ["android", "apk", "malware-analysis", "fraud", "india", "upi", "security"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Security",
+    "Environment :: Console",
+]
+
+[project.urls]
+Homepage = "https://github.com/kirtanbhatt10/chowkidar"
+Issues = "https://github.com/kirtanbhatt10/chowkidar/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
@@ -19,3 +31,7 @@ chowkidar = "chowkidar.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["chowkidar*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]
