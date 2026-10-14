@@ -2,7 +2,7 @@ import json
 
 from test_analyzer import TOKEN, clean_apk, scam_apk
 
-from chowkidar.cli import main
+from gadbad.cli import main
 
 
 def test_json_output_and_exit_code(tmp_path, capsys):

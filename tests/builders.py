@@ -1,6 +1,6 @@
 """Build synthetic APK parts (binary manifest, DEX, ZIP) for tests.
 
-No real malware is needed: these produce the same structures Chowkidar parses.
+No real malware is needed: these produce the same structures Gadbad parses.
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ import struct
 import zipfile
 from pathlib import Path
 
-from chowkidar.axml import KNOWN_ATTR_IDS
+from gadbad.axml import KNOWN_ATTR_IDS
 
 NAME_TO_ATTR_ID = {v: k for k, v in KNOWN_ATTR_IDS.items()}
 
@@ -56,10 +56,10 @@ def build_axml(root: El, *, utf8: bool = False, obfuscate_attr_names: bool = Fal
         strings = [""] * len(strings)  # names blanked, only resource IDs remain
 
     def idx(s: str) -> int:
-        if s not in strings[len(res_ids):]:
+        if s not in strings[len(res_ids) :]:
             strings.append(s)
             return len(strings) - 1
-        return len(res_ids) + strings[len(res_ids):].index(s)
+        return len(res_ids) + strings[len(res_ids) :].index(s)
 
     def attr_name_idx(name: str) -> int:
         return attr_slots[name] if obfuscate_attr_names and name in attr_slots else idx(name)
@@ -72,7 +72,9 @@ def build_axml(root: El, *, utf8: bool = False, obfuscate_attr_names: bool = Fal
         for name, value in attrs.items():
             n = attr_name_idx(name)
             if isinstance(value, bool):
-                encoded.append(struct.pack("<IIIHBBI", 0xFFFFFFFF, n, 0xFFFFFFFF, 8, 0, 0x12, 0xFFFFFFFF if value else 0))
+                encoded.append(
+                    struct.pack("<IIIHBBI", 0xFFFFFFFF, n, 0xFFFFFFFF, 8, 0, 0x12, 0xFFFFFFFF if value else 0)
+                )
             elif isinstance(value, int):
                 encoded.append(struct.pack("<IIIHBBI", 0xFFFFFFFF, n, 0xFFFFFFFF, 8, 0, 0x10, value))
             else:
@@ -124,7 +126,8 @@ def build_dex(strings: list[str]) -> bytes:
 def manifest(package: str, permissions=(), components=(), app_attrs=None) -> El:
     perms = [("uses-permission", {"name": p}, []) for p in permissions]
     app = ("application", dict(app_attrs or {}), list(components))
-    return ("manifest", {"package": package}, [("uses-sdk", {"minSdkVersion": 21, "targetSdkVersion": 30}, [])] + perms + [app])
+    sdk = ("uses-sdk", {"minSdkVersion": 21, "targetSdkVersion": 30}, [])
+    return ("manifest", {"package": package}, [sdk, *perms, app])
 
 
 def receiver(name: str, actions=(), permission: str | None = None) -> El:
@@ -136,8 +139,13 @@ def receiver(name: str, actions=(), permission: str | None = None) -> El:
 
 
 def service(name: str, actions=(), permission: str | None = None) -> El:
-    tag, attrs, children = receiver(name, actions, permission)
+    _, attrs, children = receiver(name, actions, permission)
     return ("service", attrs, children)
+
+
+def activity(name: str, actions=()) -> El:
+    _, attrs, children = receiver(name, actions)
+    return ("activity", attrs, children)
 
 
 def make_apk(path: Path, files: dict[str, bytes]) -> Path:

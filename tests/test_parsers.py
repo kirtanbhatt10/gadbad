@@ -1,7 +1,7 @@
 import pytest
 from builders import build_axml, build_dex
 
-from chowkidar import axml, dex
+from gadbad import axml, dex
 
 
 def tree():
@@ -10,11 +10,19 @@ def tree():
         {"package": "com.example.app"},
         [
             ("uses-permission", {"name": "android.permission.INTERNET"}, []),
-            ("application", {"label": "Example", "usesCleartextTraffic": True}, [
-                ("receiver", {"name": ".Rx", "exported": True}, [
-                    ("intent-filter", {}, [("action", {"name": "android.intent.action.BOOT_COMPLETED"}, [])]),
-                ]),
-            ]),
+            (
+                "application",
+                {"label": "Example", "usesCleartextTraffic": True},
+                [
+                    (
+                        "receiver",
+                        {"name": ".Rx", "exported": True},
+                        [
+                            ("intent-filter", {}, [("action", {"name": "android.intent.action.BOOT_COMPLETED"}, [])]),
+                        ],
+                    ),
+                ],
+            ),
         ],
     )
 

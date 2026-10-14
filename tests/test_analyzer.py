@@ -1,6 +1,6 @@
 from builders import build_axml, build_dex, make_apk, manifest, receiver, service
 
-from chowkidar.analyzer import analyze
+from gadbad.analyzer import analyze
 
 P = "android.permission."
 TOKEN = "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678"
@@ -13,8 +13,11 @@ def scam_apk(tmp_path):
         permissions=[P + "READ_SMS", P + "RECEIVE_SMS", P + "CALL_PHONE", P + "SYSTEM_ALERT_WINDOW", P + "INTERNET"],
         components=[
             receiver(".SmsReceiver", actions=["android.provider.Telephony.SMS_RECEIVED"]),
-            service(".Helper", actions=["android.accessibilityservice.AccessibilityService"],
-                    permission=P + "BIND_ACCESSIBILITY_SERVICE"),
+            service(
+                ".Helper",
+                actions=["android.accessibilityservice.AccessibilityService"],
+                permission=P + "BIND_ACCESSIBILITY_SERVICE",
+            ),
         ],
         app_attrs={"usesCleartextTraffic": True},
     )
@@ -25,18 +28,24 @@ def scam_apk(tmp_path):
         "https://kyc-update-1.firebaseio.com",
         "YONO KYC update",
     ]
-    return make_apk(tmp_path / "scam.apk", {
-        "AndroidManifest.xml": build_axml(m),
-        "classes.dex": build_dex(strings),
-    })
+    return make_apk(
+        tmp_path / "scam.apk",
+        {
+            "AndroidManifest.xml": build_axml(m),
+            "classes.dex": build_dex(strings),
+        },
+    )
 
 
 def clean_apk(tmp_path):
     m = manifest("com.example.notes", permissions=[P + "INTERNET"])
-    return make_apk(tmp_path / "clean.apk", {
-        "AndroidManifest.xml": build_axml(m),
-        "classes.dex": build_dex(["https://example.com/sync", "/sbin/sh"]),
-    })
+    return make_apk(
+        tmp_path / "clean.apk",
+        {
+            "AndroidManifest.xml": build_axml(m),
+            "classes.dex": build_dex(["https://example.com/sync", "/sbin/sh"]),
+        },
+    )
 
 
 def rules(report):
@@ -53,8 +62,17 @@ def test_scam_apk_is_likely_malicious(tmp_path):
     assert report.firebase_urls == ["https://kyc-update-1.firebaseio.com"]
     assert {"sbi", "yono"} <= set(report.brands)
     assert {
-        "sms_read", "sms_receiver", "accessibility", "call_forwarding", "overlay",
-        "telegram_token", "telegram_api", "firebase", "ip_endpoint", "cleartext", "impersonation",
+        "sms_read",
+        "sms_receiver",
+        "accessibility",
+        "call_forwarding",
+        "overlay",
+        "telegram_token",
+        "telegram_api",
+        "firebase",
+        "ip_endpoint",
+        "cleartext",
+        "impersonation",
     } <= rules(report)
     assert report.score == 100
     assert report.verdict == "likely malicious"
@@ -70,19 +88,25 @@ def test_clean_apk_has_no_findings(tmp_path):
 
 def test_call_forwarding_needs_call_permission(tmp_path):
     m = manifest("com.example.dialer")
-    apk = make_apk(tmp_path / "a.apk", {
-        "AndroidManifest.xml": build_axml(m),
-        "classes.dex": build_dex(["*21*"]),
-    })
+    apk = make_apk(
+        tmp_path / "a.apk",
+        {
+            "AndroidManifest.xml": build_axml(m),
+            "classes.dex": build_dex(["*21*"]),
+        },
+    )
     assert "call_forwarding" not in rules(analyze(apk))
 
 
 def test_private_ips_are_ignored(tmp_path):
     m = manifest("com.example.lan")
-    apk = make_apk(tmp_path / "a.apk", {
-        "AndroidManifest.xml": build_axml(m),
-        "classes.dex": build_dex(["http://192.168.1.5/", "http://127.0.0.1:8080"]),
-    })
+    apk = make_apk(
+        tmp_path / "a.apk",
+        {
+            "AndroidManifest.xml": build_axml(m),
+            "classes.dex": build_dex(["http://192.168.1.5/", "http://127.0.0.1:8080"]),
+        },
+    )
     assert analyze(apk).ip_endpoints == []
 
 
