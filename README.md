@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔦 Chowkidar
+#  Chowkidar
 
 ### Scam APKs don't get past the watchman.
 
