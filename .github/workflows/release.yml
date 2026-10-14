@@ -1,11 +1,13 @@
 name: Release
 
-# Push a tag like v1.0.0 to build, publish to PyPI and create a GitHub release.
+# Publish a GitHub release with a tag like v1.0.0 (Releases page > Draft a new release).
+# This workflow then checks the tag matches the package version, runs the tests,
+# publishes to PyPI and attaches the built files to the release.
 # PyPI publishing uses Trusted Publishing (OIDC): no API token is stored in the repo.
 
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -49,27 +51,17 @@ jobs:
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
 
-  github-release:
+  attach-files:
     needs: publish-pypi
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
-      - name: Extract release notes from CHANGELOG.md
-        run: |
-          version="${GITHUB_REF_NAME#v}"
-          awk -v v="$version" '
-            $0 ~ "^## \\[" v "\\]" {found=1; next}
-            found && /^## \[/ {exit}
-            found {print}
-          ' CHANGELOG.md > notes.md
-          test -s notes.md || echo "See CHANGELOG.md" > notes.md
-      - name: Create GitHub release
+      - name: Attach the wheel and source archive to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --title "Gadbad $GITHUB_REF_NAME" --notes-file notes.md
+        run: gh release upload "$GITHUB_REF_NAME" dist/* --clobber --repo "$GITHUB_REPOSITORY"
